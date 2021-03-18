@@ -17,7 +17,9 @@ class ActivateEmail extends Component {
     console.log(this.state.code)
     await this.props.confirmLogin(email, code)
     await this.setState({ loading: false })
-    this.props.navigation.navigate('Profile')
+    if (this.props.auth.erroMsg === null) {
+      this.props.navigation.navigate('Profile')
+    }
   }
   render () {
     return (

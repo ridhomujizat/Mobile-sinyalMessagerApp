@@ -1,6 +1,7 @@
 import React from 'react'
 import { NavigationContainer } from '@react-navigation/native'
-import Router from '../src/routes/Router'
+import Router from './routes/Router'
+import Root from './helpers/Root'
 import { Provider } from 'react-redux'
 import persistedStore from './redux/store'
 import { PersistGate } from 'redux-persist/integration/react'
@@ -11,7 +12,9 @@ const App = () => {
     <Provider store={store}>
       <PersistGate persistor={persistor}>
         <NavigationContainer>
-          <Router />
+          <Root>
+            <Router />
+          </Root>
         </NavigationContainer>
       </PersistGate>
     </Provider>

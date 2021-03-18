@@ -40,6 +40,13 @@ export const confirmLogin = (email, pin) => {
         type: 'LOGIN',
         payload: {
           ...results.data.results,
+          firstName: results.data.results.firstName === null
+            ? ''
+            : results.data.results.firstName,
+          lastName: results.data.results.lastName === null
+            ? ''
+            : results.data.results.lastName,
+          afterLogin: true,
           message: results.data.message
         }
       })

@@ -6,7 +6,7 @@ import Goback from '../assets/images/icon/goback.png'
 import Pen from '../assets/images/icon/pen.png'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { connect } from 'react-redux'
-import { chatList } from '../redux/actions/chat'
+import { chatList, selectChat } from '../redux/actions/chat'
 import { parsingTime } from '../helpers/date'
 import { hashCode } from '../helpers/color'
 import { API_URL } from '@env'
@@ -15,10 +15,19 @@ import qs from 'querystring'
 class ChatList extends Component {
   state = {
     search: false,
-    chat: [],
+    searchText: '',
   }
   componentDidMount () {
     this.fetchData()
+  }
+
+  search = async (value) => {
+    const { token } = this.props.auth
+    await this.setState({ searchText: value })
+    const cond = await qs.stringify({
+      search: this.state.searchText
+    })
+    await this.props.chatList(token, cond)
   }
 
   async fetchData () {
@@ -28,6 +37,7 @@ class ChatList extends Component {
   }
   showSearch () {
     this.setState({ search: !this.state.search })
+    this.fetchData()
   }
   render () {
     return (
@@ -39,17 +49,18 @@ class ChatList extends Component {
                 <Pressable onPress={() => this.showSearch()}>
                   <Image style={styles.iconBack} source={Goback} />
                 </Pressable>
-                <TextInput placeholder='Search Chat' style={styles.input} />
+                <TextInput onChangeText={(value) => this.search(value)} placeholder='Search Chat' style={styles.input} />
               </View>
             </>)
             : (<>
               <View style={styles.flexRow}>
-                {this.props.auth.picture
-                  ? (<Image style={styles.profile} source={{ uri: `${API_URL}${this.props.auth.picture}` }} />)
-                  : (<View style={[styles.profile, { backgroundColor: `${hashCode(this.props.auth.firstName)}` }]} >
-                    <Text style={styles.nameProfile}>{this.props.auth.firstName.slice(0, 1)}</Text>
-                  </View>)
-                }
+                <Pressable onPress={() => this.props.navigation.navigate('Setting')}>
+                  {this.props.auth.picture
+                    ? (<Image style={styles.profile} source={{ uri: `${API_URL}${this.props.auth.picture}` }} />)
+                    : (<View style={[styles.profile, { backgroundColor: `${hashCode(this.props.auth.firstName)}` }]} >
+                      <Text style={styles.nameProfile}>{this.props.auth.firstName.slice(0, 1)}</Text>
+                    </View>)
+                  }</Pressable>
                 <Text style={styles.Signal}>Signal</Text>
               </View>
               <View style={styles.flexRow}>
@@ -72,11 +83,15 @@ class ChatList extends Component {
           </View>
           <FlatList
             showsVerticalScrollIndicator={false}
-            data={this.state.chat}
+            data={this.props.chat.chatList.results}
             keyExtractor={(item) => String(item.id)}
             renderItem={({ item }) => (
               <>
-                <TouchableOpacity onPress={() => this.props.navigation.navigate('RoomChat', { data: item })}>
+                <TouchableOpacity onPress={() => {
+                  this.props.navigation.navigate('RoomChat', { data: item })
+                  this.props.selectChat(item.id)
+                }
+                }>
                   <View style={styles.column}>
                     <View style={styles.flexRow} >
                       {item.picture
@@ -227,5 +242,5 @@ const mapStateToProps = (state) => ({
   auth: state.auth,
   chat: state.chat
 })
-const mapDispatchToProps = { chatList }
+const mapDispatchToProps = { chatList, selectChat }
 export default connect(mapStateToProps, mapDispatchToProps)(ChatList)

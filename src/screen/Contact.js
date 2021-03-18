@@ -5,20 +5,40 @@ import { API_URL } from '@env'
 import { hashCode } from '../helpers/color'
 import { connect } from 'react-redux'
 import { contactList } from '../redux/actions/chat'
+import qs from 'querystring'
+import ASC from '../assets/images/icon/sort.png'
+import DESC from '../assets/images/icon/sort-desc.png'
 
 class Contact extends Component {
   state = {
-    contact: []
+    search: '',
+    sort: 'firstName',
+    order: 'ASC',
   }
   componentDidMount () {
     this.fetchData()
   }
 
+  search = async (value) => {
+    const { token } = this.props.auth
+    await this.setState({ search: value })
+    const cond = await qs.stringify({ ...this.state })
+    await this.props.contactList(token, cond)
+  }
+
+  sort = async (value) => {
+    const { token } = this.props.auth
+    const order = this.state.order === 'ASC' ? 'DESC' : 'ASC'
+    console.log(order)
+    await this.setState({ sort: value, order: order })
+    const cond = await qs.stringify({ ...this.state })
+    await this.props.contactList(token, cond)
+  }
   async fetchData () {
     const { token } = this.props.auth
     await this.props.contactList(token)
-    await this.setState({ contact: this.props.chat.contact.results })
   }
+
   render () {
     return (
       <View style={styles.container}>
@@ -27,12 +47,15 @@ class Contact extends Component {
             <Pressable onPress={() => this.props.navigation.navigate('Home')}>
               <Image style={styles.iconBack} source={Goback} />
             </Pressable>
-            <TextInput placeholder='Search contact' style={styles.input} />
+            <TextInput placeholder='Search contact' style={styles.input} onChangeText={(value) => this.search(value)} />
+            <Pressable onPress={() => this.sort('firstName')}>
+              <Image style={styles.iconBack} source={this.state.order === 'ASC' ? ASC : DESC} />
+            </Pressable>
           </View>
         </View>
         <FlatList
           showsVerticalScrollIndicator={false}
-          data={this.state.contact}
+          data={this.props.chat.contact.results}
           keyExtractor={(item) => String(item.id)}
           renderItem={({ item }) => (
             <Pressable onPress={() => this.props.navigation.navigate('RoomChat', { data: item })}>
@@ -73,8 +96,9 @@ const styles = StyleSheet.create({
   },
   input: {
     borderBottomWidth: 1,
-    width: '80%',
-    paddingTop: 0
+    width: '75%',
+    paddingTop: 0,
+    marginRight: 3
   },
   iconBack: {
     height: 25,
@@ -107,7 +131,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
     resizeMode: 'cover',
     borderRadius: 60
-  },
+  }
 })
 
 const mapStateToProps = (state) => ({

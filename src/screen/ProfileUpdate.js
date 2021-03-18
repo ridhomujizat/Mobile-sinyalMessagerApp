@@ -9,6 +9,7 @@ import * as Yup from 'yup'
 import { connect } from 'react-redux'
 import { updateProfile, notAfterLogin } from '../redux/actions/profile'
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import Goback from '../assets/images/icon/goback.png'
 
 const validationSchema = Yup.object().shape({
   firstName: Yup.string()
@@ -31,8 +32,7 @@ class Profile extends Component {
     console.log(values)
     const { token } = this.props.auth
     await this.props.updateProfile(token, values)
-    await this.props.notAfterLogin()
-    await this.props.navigation.navigate('Home')
+    await this.props.navigation.navigate('Setting')
   }
   launchCamera = () => {
     const { token } = this.props.auth
@@ -144,75 +144,85 @@ class Profile extends Component {
           </View>
         </Modal>
         <View style={styles.container}>
-          <Formik
-            validationSchema={validationSchema}
-            onSubmit={values => this.updateProfile(values)}
-            initialValues={{ firstName: this.props.auth.firstName, lastName: this.props.auth.lastName }}
-          >
-            {(
-              {
-                handleChange,
-                handleBlur,
-                handleSubmit,
-                values,
-                errors,
-                isValid,
-                touched
-              }) => (
-              <>
-                <View style={styles.editProfile}>
-                  <Text style={styles.title}>Set up your profile</Text>
-                  <Pressable onPress={() => this.showModal()}>
-                    {this.props.auth.picture
-                      ? (<Image style={styles.picture} source={{ uri: `${API_URL}${this.props.auth.picture}` }} />)
-                      : (<View style={[styles.picture, { backgroundColor: `${hashCode(this.props.auth.firstName)}` }]}>
-                        <Text style={styles.profileName}>{values.firstName.slice(0, 1)}</Text>
-                      </View>)}
-                    <View style={styles.iconSmallWrapper}>
-                      <Image style={styles.iconSmall} source={Camera} />
-                    </View>
-                  </Pressable>
-                  <Text>{`${values.firstName} ${values.lastName}`}</Text>
-                  {this.state.message && (
-                    <Text style={styles.textErrorPicture}>*{this.state.message}</Text>
-                  )}
-                  <TextInput
-                    placeholder='Your Frist Name'
-                    style={styles.input}
-                    value={values.firstName}
-                    onChangeText={handleChange('firstName')}
-                    onBlur={handleBlur('firstName')}
-                  />
-                  {errors.firstName && touched.firstName
-                    ? <Text style={styles.textError}>{errors.firstName}</Text>
-                    : null}
-                  <TextInput
-                    placeholder='Last Name (Optional)'
-                    style={styles.input}
-                    value={values.lastName}
-                    onChangeText={handleChange('lastName')}
-                    onBlur={handleBlur('lastName')}
-                  />
-                  {errors.lastName && touched.lastName
-                    ? <Text style={styles.textError}>{errors.lastName}</Text>
-                    : null}
+          <View style={styles.header}>
+            <View style={styles.flexRow}>
+              <Pressable onPress={() => this.props.navigation.navigate('Home')}>
+                <Image style={styles.iconBack} source={Goback} />
+              </Pressable>
+              <Text style={styles.Signal}>Setting</Text>
+            </View>
+          </View>
+          <View style={styles.wrapper}>
+            <Formik
+              validationSchema={validationSchema}
+              onSubmit={values => this.updateProfile(values)}
+              initialValues={{ firstName: this.props.auth.firstName, lastName: this.props.auth.lastName }}
+            >
+              {(
+                {
+                  handleChange,
+                  handleBlur,
+                  handleSubmit,
+                  values,
+                  errors,
+                  isValid,
+                  touched
+                }) => (
+                <>
+                  <View style={styles.editProfile}>
+                    {/* <Text style={styles.title}>Set up your profile</Text> */}
+                    <Pressable onPress={() => this.showModal()}>
+                      {this.props.auth.picture
+                        ? (<Image style={styles.picture} source={{ uri: `${API_URL}${this.props.auth.picture}` }} />)
+                        : (<View style={[styles.picture, { backgroundColor: `${hashCode(this.props.auth.firstName)}` }]}>
+                          <Text style={styles.profileName}>{values.firstName.slice(0, 1)}</Text>
+                        </View>)}
+                      <View style={styles.iconSmallWrapper}>
+                        <Image style={styles.iconSmall} source={Camera} />
+                      </View>
+                    </Pressable>
+                    <Text>{`${values.firstName} ${values.lastName}`}</Text>
+                    {this.state.message && (
+                      <Text style={styles.textErrorPicture}>*{this.state.message}</Text>
+                    )}
+                    <TextInput
+                      placeholder='Your Frist Name'
+                      style={styles.input}
+                      value={values.firstName}
+                      onChangeText={handleChange('firstName')}
+                      onBlur={handleBlur('firstName')}
+                    />
+                    {errors.firstName && touched.firstName
+                      ? <Text style={styles.textError}>{errors.firstName}</Text>
+                      : null}
+                    <TextInput
+                      placeholder='Last Name (Optional)'
+                      style={styles.input}
+                      value={values.lastName}
+                      onChangeText={handleChange('lastName')}
+                      onBlur={handleBlur('lastName')}
+                    />
+                    {errors.lastName && touched.lastName
+                      ? <Text style={styles.textError}>{errors.lastName}</Text>
+                      : null}
 
-                  <Text style={styles.textInfo}>Your profile is end-to-end encrypted. Your profile and change to
-                  it will be visible to your contacts, when you initiate or accept new conversations, and when
-                  your join new groups
+                    <Text style={styles.textInfo}>Your profile is end-to-end encrypted. Your profile and change to
+                    it will be visible to your contacts, when you initiate or accept new conversations, and when
+                    your join new groups
           </Text>
-                </View>
-                {this.state.loading
-                  ? <ActivityIndicator size='large' color="#FE9AB4" style={styles.loading} />
-                  : (<Pressable style={styles.button} onPress={handleSubmit}
-                    android_ripple={{ color: '#B65971', borderless: false }} disabled={!isValid || values.firstName === ''}>
-                    <Text style={styles.buttonText}>
-                      CONTINUE
+                  </View>
+                  {this.state.loading
+                    ? <ActivityIndicator size='large' color="#FE9AB4" style={styles.loading} />
+                    : (<Pressable style={styles.button} onPress={handleSubmit}
+                      android_ripple={{ color: '#B65971', borderless: false }} disabled={!isValid || values.firstName === ''}>
+                      <Text style={styles.buttonText}>
+                        Update
             </Text>
-                  </Pressable>)}
-              </>
-            )}
-          </Formik>
+                    </Pressable>)}
+                </>
+              )}
+            </Formik>
+          </View>
         </View>
       </>
     )
@@ -222,9 +232,33 @@ class Profile extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingBottom: 0
+  },
+  wrapper: {
     padding: 20,
+    alignContent: 'center',
+    alignItems: 'center',
+    flex: 1
+  },
+  header: {
+    padding: 20,
+    flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center'
+  },
+  flexRow: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  iconBack: {
+    height: 25,
+    width: 25,
+    marginRight: 20
+  },
+  Signal: {
+    fontFamily: 'Roboto-Medium',
+    fontSize: 16,
+    color: '#484848'
   },
   editProfile: {
     alignItems: 'center',

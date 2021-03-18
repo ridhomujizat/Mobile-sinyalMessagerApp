@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { createStackNavigator } from '@react-navigation/stack'
 
 import PrivacyPolice from '../screen/PrivacyPolice'
@@ -8,7 +8,8 @@ import Profile from '../screen/Profile'
 import Home from '../screen/ChatList'
 import RoomChat from '../screen/RoomChat'
 import Contact from '../screen/Contact'
-
+import Setting from '../screen/Setting'
+import ProfileUpdate from '../screen/ProfileUpdate'
 import { connect } from 'react-redux'
 
 const Stack = createStackNavigator()
@@ -16,11 +17,12 @@ const Stack = createStackNavigator()
 function Router (props) {
   const { token, afterLogin } = props.auth
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     SplashScreen.hide()
-  //   }, 2000)
-  // }, [])
+  useEffect(() => {
+    console.log(afterLogin, token)
+    // setTimeout(() => {
+    //   SplashScreen.hide()
+    // }, 2000)
+  }, [])
   return (
     <Stack.Navigator screenOptions={{ header: () => false }}>
       { token === null && (
@@ -38,6 +40,8 @@ function Router (props) {
           <Stack.Screen component={Home} name='Home' />
           <Stack.Screen component={RoomChat} name='RoomChat' />
           <Stack.Screen component={Contact} name='Contact' />
+          <Stack.Screen component={Setting} name='Setting' />
+          <Stack.Screen component={ProfileUpdate} name='ProfileUpdate' />
         </>
       )}
     </Stack.Navigator>

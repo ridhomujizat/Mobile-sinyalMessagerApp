@@ -5,12 +5,15 @@ const initialState = {
   },
   chatRoom: {
     results: null,
-    pageInfo: null
+    pageInfo: {
+      nextLink: true
+    }
   },
   contact: {
     results: null,
     pageInfo: null
   },
+  idReceiver: null,
   message: null,
   errorMsg: null
 }
@@ -21,6 +24,16 @@ const chatReducer = (state = initialState, action) => {
       return {
         ...state,
         ...action.payload
+      }
+    }
+    case 'ADD_CHAT': {
+      return {
+        ...state,
+        chatRoom: {
+          results: [...state.chatRoom.results, ...action.payload.chatRoom.results],
+          pageInfo: action.payload.chatRoom.pageInfo
+        },
+        message: action.payload.message
       }
     }
     case 'ERROR': {

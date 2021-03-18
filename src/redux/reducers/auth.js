@@ -1,13 +1,13 @@
 const initialState = {
+  afterLogin: true,
   id: null,
   token: null,
   firstName: 'S',
-  lastName: null,
+  lastName: '',
   email: null,
   picture: null,
   message: null,
-  errorMsg: null,
-  afterLogin: true
+  errorMsg: null
 }
 
 const authReducer = (state = initialState, action) => {
@@ -21,10 +21,12 @@ const authReducer = (state = initialState, action) => {
     case 'LOGOUT': {
       return {
         token: null,
-        firstName: null,
+        firstName: 'signal',
         lastName: null,
         message: null,
-        errorMsg: null
+        errorMsg: null,
+        id: null,
+        afterLogin: true
       }
     }
     case 'ERROR': {
