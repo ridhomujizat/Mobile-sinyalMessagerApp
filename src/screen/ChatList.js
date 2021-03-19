@@ -19,6 +19,9 @@ class ChatList extends Component {
   }
   componentDidMount () {
     this.fetchData()
+    this.props.navigation.addListener('focus', () => {
+      this.fetchData()
+    });
   }
 
   search = async (value) => {

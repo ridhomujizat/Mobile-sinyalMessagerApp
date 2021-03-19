@@ -9,10 +9,11 @@ import { hashCode } from '../helpers/color'
 import { connect } from 'react-redux'
 import { chatRoom, sendChat, scrollChatRoom } from '../redux/actions/chat'
 import io from '../helpers/socket';
-import qs from 'querystring'
 
 class RoomChat extends Component {
   state = {
+    loading: true,
+    update: false,
     message: null,
     pageInfo: {
       nextLink: null
@@ -24,9 +25,11 @@ class RoomChat extends Component {
     const { data } = this.props.route.params
     this.fetchData()
     io.onAny(() => {
-      if (id) {
+      this.setState({ update: !this.state.update })
+      if (this.state.update) {
         io.once(id, (msg) => {
           this.updateChat(token, data.id)
+          this.setState({ update: !this.state.update })
         })
       }
     })
@@ -39,6 +42,7 @@ class RoomChat extends Component {
     const { token } = this.props.auth
     console.log(data.id)
     await this.props.chatRoom(token, data.id)
+    await this.setState({ loading: false })
   }
 
   async sendChat () {
@@ -79,6 +83,11 @@ class RoomChat extends Component {
           <Text style={styles.Name}>{data.firstName} {data.lastName}</Text>
         </View>
         <View >
+          {this.state.loading && (
+            <View style={styles.chatWrapper}>
+              <ActivityIndicator size='large' color="#FE9AB4" style={styles.loading} />
+            </View>
+          )}
           <FlatList
             showsVerticalScrollIndicator={false}
             data={this.props.chat.chatRoom.results}
