@@ -19,10 +19,14 @@ class ChatList extends Component {
   }
   componentDidMount () {
     this.fetchData()
-    this.props.navigation.addListener('focus', () => {
+    this.willFocusSubscription = this.props.navigation.addListener('focus', () => {
       this.fetchData()
     });
   }
+  componentWillUnmount () {
+    this.willFocusSubscription = false
+  }
+
 
   search = async (value) => {
     const { token } = this.props.auth

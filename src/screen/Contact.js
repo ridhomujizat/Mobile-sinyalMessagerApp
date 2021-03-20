@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { StyleSheet, View, Pressable, Image, TextInput, Text, FlatList } from 'react-native'
+import { StyleSheet, View, Pressable, Image, TextInput, Text, FlatList, ActivityIndicator } from 'react-native'
 import Goback from '../assets/images/icon/goback.png'
 import { API_URL } from '@env'
 import { hashCode } from '../helpers/color'
@@ -14,6 +14,7 @@ class Contact extends Component {
     search: '',
     sort: 'firstName',
     order: 'ASC',
+    loading: true
   }
   componentDidMount () {
     this.fetchData()
@@ -22,21 +23,26 @@ class Contact extends Component {
   search = async (value) => {
     const { token } = this.props.auth
     await this.setState({ search: value })
+    await this.setState({ loading: true })
     const cond = await qs.stringify({ ...this.state })
     await this.props.contactList(token, cond)
+    await this.setState({ loading: false })
   }
 
   sort = async (value) => {
     const { token } = this.props.auth
     const order = this.state.order === 'ASC' ? 'DESC' : 'ASC'
     console.log(order)
+    await this.setState({ loading: true })
     await this.setState({ sort: value, order: order })
     const cond = await qs.stringify({ ...this.state })
     await this.props.contactList(token, cond)
+    await this.setState({ loading: false })
   }
   async fetchData () {
     const { token } = this.props.auth
     await this.props.contactList(token)
+    await this.setState({ loading: false })
   }
 
   render () {
@@ -53,26 +59,30 @@ class Contact extends Component {
             </Pressable>
           </View>
         </View>
-        <FlatList
-          showsVerticalScrollIndicator={false}
-          data={this.props.chat.contact.results}
-          keyExtractor={(item) => String(item.id)}
-          renderItem={({ item }) => (
-            <Pressable onPress={() => this.props.navigation.navigate('RoomChat', { data: item })}>
-              <View style={styles.column}>
-                {item.picture
-                  ? (<Image source={{ uri: `${API_URL}${item.picture}` }} style={styles.picture} />)
-                  : (<View style={[styles.profileFriend, { backgroundColor: `${hashCode(item.firstName)}` }]}>
-                    <Text style={styles.profileName}>{item.firstName.slice(0, 1)}</Text>
-                  </View>)}
-                <View>
-                  <Text>{item.firstName} {item.lastName}</Text>
-                  <Text>{item.email}</Text>
-                </View>
-              </View>
-            </Pressable>
-          )}
-        />
+        {this.state.loading
+          ? (<ActivityIndicator size='large' color="#FE9AB4" style={styles.loading} />)
+          : (<FlatList
+            showsVerticalScrollIndicator={false}
+            data={this.props.chat.contact.results}
+            keyExtractor={(item) => String(item.id)}
+            renderItem={({ item }) => (
+              <>
+                <Pressable onPress={() => this.props.navigation.navigate('RoomChat', { data: item })}>
+                  <View style={styles.column}>
+                    {item.picture
+                      ? (<Image source={{ uri: `${API_URL}${item.picture}` }} style={styles.picture} />)
+                      : (<View style={[styles.profileFriend, { backgroundColor: `${hashCode(item.firstName)}` }]}>
+                        <Text style={styles.profileName}>{item.firstName.slice(0, 1)}</Text>
+                      </View>)}
+                    <View>
+                      <Text>{item.firstName} {item.lastName}</Text>
+                      <Text>{item.email}</Text>
+                    </View>
+                  </View>
+                </Pressable>
+              </>
+            )}
+          />)}
       </View>
     )
   }
@@ -131,7 +141,10 @@ const styles = StyleSheet.create({
     marginRight: 10,
     resizeMode: 'cover',
     borderRadius: 60
-  }
+  },
+  loading: {
+    marginTop: 40
+  },
 })
 
 const mapStateToProps = (state) => ({

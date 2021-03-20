@@ -147,6 +147,7 @@ class Profile extends Component {
           <Formik
             validationSchema={validationSchema}
             onSubmit={values => this.updateProfile(values)}
+            // initialValues={{ firstName: null, lastName: null }}
             initialValues={{ firstName: this.props.auth.firstName, lastName: this.props.auth.lastName }}
           >
             {(
@@ -204,7 +205,8 @@ class Profile extends Component {
                 </View>
                 {this.state.loading
                   ? <ActivityIndicator size='large' color="#FE9AB4" style={styles.loading} />
-                  : (<Pressable style={styles.button} onPress={handleSubmit}
+                  : (<Pressable style={[styles.button, !isValid || values.firstName === '' ? { backgroundColor: '#FFD4E0', elevation: 0 } : null]}
+                    onPress={handleSubmit}
                     android_ripple={{ color: '#B65971', borderless: false }} disabled={!isValid || values.firstName === ''}>
                     <Text style={styles.buttonText}>
                       CONTINUE

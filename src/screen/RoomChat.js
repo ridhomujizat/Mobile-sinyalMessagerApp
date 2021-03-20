@@ -20,23 +20,19 @@ class RoomChat extends Component {
     }
   }
   componentDidMount () {
+    const { idReceiver } = this.props.chat
     const { id } = this.props.auth
-    const { token } = this.props.auth
-    const { data } = this.props.route.params
     this.fetchData()
     io.onAny(() => {
-      this.setState({ update: !this.state.update })
-      if (this.state.update) {
+      if (idReceiver) {
         io.once(id, (msg) => {
-          this.updateChat(token, data.id)
-          this.setState({ update: !this.state.update })
+          this.fetchData()
+
         })
       }
     })
   }
-  updateChat = async (token, sender) => {
-    await this.props.chatRoom(token, sender);
-  };
+
   async fetchData () {
     const { data } = this.props.route.params
     const { token } = this.props.auth

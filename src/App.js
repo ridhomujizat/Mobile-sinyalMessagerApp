@@ -1,7 +1,7 @@
 import React from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import Router from './routes/Router'
-import Root from './helpers/Root'
+import Root from './Root'
 import { Provider } from 'react-redux'
 import persistedStore from './redux/store'
 import { PersistGate } from 'redux-persist/integration/react'

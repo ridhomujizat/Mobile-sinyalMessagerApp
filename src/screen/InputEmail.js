@@ -64,10 +64,10 @@ class InputEmail extends Component {
                   : null}
                 {this.state.loading
                   ? <ActivityIndicator size='large' color="#FE9AB4" style={styles.loading} />
-                  : (<Pressable style={styles.button}
+                  : (<Pressable style={[styles.button, !isValid || values.email === '' ? { backgroundColor: '#FFD4E0', elevation: 0 } : null]}
                     onPress={handleSubmit}
                     android_ripple={{ color: '#B65971', borderless: false }}
-                    disabled={!isValid}>
+                    disabled={!isValid || values.email === ''}>
                     <Text style={styles.buttonText}>
                       NEXT
                     </Text>

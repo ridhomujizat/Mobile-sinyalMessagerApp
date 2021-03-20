@@ -1,13 +1,17 @@
 
 import React, { Component } from 'react';
-import io from './socket';
+import io from './helpers/socket';
 import { connect } from 'react-redux';
-import { chatRoom, chatList } from '../redux/actions/chat';
+import { chatRoom, chatList } from './redux/actions/chat';
 
 class Root extends Component {
+  state = {
+    idReceiver: null
+  }
   getListChat = async (token) => {
     await this.props.chatList(token);
   };
+
   componentDidMount () {
     const { id } = this.props.auth
     const { token } = this.props.auth
@@ -18,6 +22,7 @@ class Root extends Component {
         })
       }
     })
+
   }
   render () {
     return <>{this.props.children}</>

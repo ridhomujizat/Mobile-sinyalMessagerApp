@@ -18,8 +18,9 @@ class ActivateEmail extends Component {
     await this.props.confirmLogin(email, code)
     await this.setState({ loading: false })
     if (this.props.auth.erroMsg === null) {
-      this.props.navigation.navigate('Profile')
+      return this.props.navigation.navigate('Profile')
     }
+    await this.setState({ code: '' })
   }
   render () {
     return (
@@ -31,11 +32,13 @@ class ActivateEmail extends Component {
           value={this.state.code}
           onTextChange={code => this.setState({ code: code })}
         />
+        {this.props.auth.errorMsg && <Text style={styles.textError}>{this.props.auth.errorMsg}</Text>}
         {this.state.loading
           ? <ActivityIndicator size='large' color="#FE9AB4" style={styles.loading} />
-          : (<Pressable style={styles.button} onPress={() => this.handleSubmit()}
+          : (<Pressable style={[styles.button, this.state.code.length < 4 ? { backgroundColor: '#FFD4E0', elevation: 0 } : null]}
+            onPress={() => this.handleSubmit()}
             android_ripple={{ color: '#B65971', borderless: false }}
-            disabled={this.state.code === ''}
+            disabled={this.state.code.length < 4}
           >
             <Text style={styles.buttonText}>
               NEXT
@@ -78,7 +81,12 @@ const styles = StyleSheet.create({
   },
   loading: {
     marginTop: 20
-  }
+  },
+  textError: {
+    fontFamily: 'Roboto-Reguler',
+    fontSize: 12,
+    color: 'red',
+  },
 })
 
 const mapStateToProps = (state) => ({
