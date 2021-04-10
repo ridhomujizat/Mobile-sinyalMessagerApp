@@ -18,7 +18,6 @@ class InputEmail extends Component {
   }
   async sendEmail (values) {
     this.setState({ loading: true })
-    console.log(values.email)
     await this.props.login(values.email)
     await this.setState({ loading: false })
     this.props.navigation.navigate('ActivateEmail')

@@ -10,19 +10,24 @@ class Root extends Component {
   }
   getListChat = async (token) => {
     await this.props.chatList(token);
-  };
-
+  }
+  getRoomChat = async (token, idReceiver) => {
+    await this.props.chatRoom(token, idReceiver);
+  }
   componentDidMount () {
     const { id } = this.props.auth
     const { token } = this.props.auth
-    io.onAny(() => {
-      if (id) {
-        io.once(id, (msg) => {
-          this.getListChat(token)
-        })
-      }
-    })
-
+    const { idReceiver } = this.props.chat
+    if (token) {
+      io.on(id, (msg) => {
+        this.getListChat(token)
+      })
+    }
+    if (idReceiver) {
+      io.on(id, async (msg) => {
+        await this.getRoomChat(token, idReceiver)
+      })
+    }
   }
   render () {
     return <>{this.props.children}</>

@@ -3,12 +3,14 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 
 platform :ios, '10.0'
 
-target 'sinyal' do
+target 'Sinyal' do
   config = use_native_modules!
 
   use_react_native!(:path => config["reactNativePath"])
 
-  target 'sinyalTests' do
+  pod 'react-native-splash-screen', :path => '../node_modules/react-native-splash-screen'
+
+  target 'SinyalTests' do
     inherit! :complete
     # Pods for testing
   end
@@ -23,10 +25,10 @@ target 'sinyal' do
   end
 end
 
-target 'sinyal-tvOS' do
-  # Pods for sinyal-tvOS
+target 'Sinyal-tvOS' do
+  # Pods for Sinyal-tvOS
 
-  target 'sinyal-tvOSTests' do
+  target 'Sinyal-tvOSTests' do
     inherit! :search_paths
     # Pods for testing
   end

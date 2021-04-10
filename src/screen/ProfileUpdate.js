@@ -29,7 +29,6 @@ class Profile extends Component {
   }
 
   async updateProfile (values) {
-    console.log(values)
     const { token } = this.props.auth
     await this.props.updateProfile(token, values)
     await this.props.navigation.navigate('Setting')
@@ -40,7 +39,6 @@ class Profile extends Component {
       quality: 0.3,
     }
     launchCamera(options, async (response) => {
-      console.log(response)
       if (response.errorMessage) {
         this.showModal()
         this.showingMessage('Unable To Lauch Gallery', `${response.errorCode} ${response.errorMessage}`)
@@ -61,7 +59,6 @@ class Profile extends Component {
           await this.props.updateProfile(token, { picture: image })
           await this.setState({ loading: false })
         } catch (err) {
-          console.log(err)
           await this.setState({ loading: false })
           this.showingMessage(`Picture failed to update`, this.props.auth.errorMsg)
         }
@@ -75,7 +72,6 @@ class Profile extends Component {
       mediaType: 'photo'
     }
     launchImageLibrary(options, async (response) => {
-      console.log(response)
       if (response.errorMessage) {
         this.showModal()
         this.showingMessage('Unable To Lauch Gallery', `${response.errorCode} ${response.errorMessage}`)
@@ -96,7 +92,6 @@ class Profile extends Component {
           await this.props.updateProfile(token, { picture: image })
           await this.setState({ isLoading: false })
         } catch (err) {
-          console.log(err)
           await this.setState({ isLoading: false })
           this.showingMessage(`Picture failed to update`, this.props.auth.errorMsg)
         }

@@ -36,6 +36,26 @@ const chatReducer = (state = initialState, action) => {
         message: action.payload.message
       }
     }
+    case 'ADD_CHATLIST': {
+      return {
+        ...state,
+        chatList: {
+          results: [...state.chatList.results, ...action.payload.chatList.results],
+          pageInfo: action.payload.chatList.pageInfo
+        },
+        message: action.payload.message
+      }
+    }
+    case 'ADD_CONTACTLIST': {
+      return {
+        ...state,
+        contact: {
+          results: [...state.contact.results, ...action.payload.contact.results],
+          pageInfo: action.payload.contact.pageInfo
+        },
+        message: action.payload.message
+      }
+    }
     case 'ERROR': {
       return {
         ...state,

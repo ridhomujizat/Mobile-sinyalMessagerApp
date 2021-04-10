@@ -11,7 +11,7 @@ import Contact from '../screen/Contact'
 import Setting from '../screen/Setting'
 import ProfileUpdate from '../screen/ProfileUpdate'
 import { connect } from 'react-redux'
-
+import SplashScreen from 'react-native-splash-screen'
 const Stack = createStackNavigator()
 
 function Router (props) {
@@ -19,9 +19,9 @@ function Router (props) {
 
   useEffect(() => {
     console.log(afterLogin, token)
-    // setTimeout(() => {
-    //   SplashScreen.hide()
-    // }, 2000)
+    setTimeout(() => {
+      SplashScreen.hide()
+    }, 2000)
   }, [])
   return (
     <Stack.Navigator screenOptions={{ header: () => false }}>

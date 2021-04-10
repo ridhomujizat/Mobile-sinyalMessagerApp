@@ -4,7 +4,7 @@ import Goback from '../assets/images/icon/goback.png'
 import { API_URL } from '@env'
 import { hashCode } from '../helpers/color'
 import { connect } from 'react-redux'
-import { contactList } from '../redux/actions/chat'
+import { contactList, scrollContactList } from '../redux/actions/chat'
 import qs from 'querystring'
 import ASC from '../assets/images/icon/sort.png'
 import DESC from '../assets/images/icon/sort-desc.png'
@@ -32,7 +32,6 @@ class Contact extends Component {
   sort = async (value) => {
     const { token } = this.props.auth
     const order = this.state.order === 'ASC' ? 'DESC' : 'ASC'
-    console.log(order)
     await this.setState({ loading: true })
     await this.setState({ sort: value, order: order })
     const cond = await qs.stringify({ ...this.state })
@@ -44,7 +43,13 @@ class Contact extends Component {
     await this.props.contactList(token)
     await this.setState({ loading: false })
   }
-
+  async nextPage () {
+    const { token } = this.props.auth
+    const { nextLink } = this.props.chat.contact.pageInfo
+    if (nextLink !== null) {
+      await this.props.scrollContactList(token, nextLink.replace('&undefined=', ''))
+    }
+  }
   render () {
     return (
       <View style={styles.container}>
@@ -65,6 +70,8 @@ class Contact extends Component {
             showsVerticalScrollIndicator={false}
             data={this.props.chat.contact.results}
             keyExtractor={(item) => String(item.id)}
+            onEndReached={() => this.nextPage()}
+            onEndReachedThreshold={0.1}
             renderItem={({ item }) => (
               <>
                 <Pressable onPress={() => this.props.navigation.navigate('RoomChat', { data: item })}>
@@ -151,5 +158,5 @@ const mapStateToProps = (state) => ({
   auth: state.auth,
   chat: state.chat
 })
-const mapDispatchToProps = { contactList }
+const mapDispatchToProps = { contactList, scrollContactList }
 export default connect(mapStateToProps, mapDispatchToProps)(Contact)

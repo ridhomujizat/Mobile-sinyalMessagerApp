@@ -20,23 +20,16 @@ class RoomChat extends Component {
     }
   }
   componentDidMount () {
-    const { idReceiver } = this.props.chat
     const { id } = this.props.auth
     this.fetchData()
-    io.onAny(() => {
-      if (idReceiver) {
-        io.once(id, (msg) => {
-          this.fetchData()
-
-        })
-      }
+    io.on(id, async (msg) => {
+      await this.fetchData()
     })
   }
 
   async fetchData () {
     const { data } = this.props.route.params
     const { token } = this.props.auth
-    console.log(data.id)
     await this.props.chatRoom(token, data.id)
     await this.setState({ loading: false })
   }
@@ -54,13 +47,11 @@ class RoomChat extends Component {
     const { token } = this.props.auth
     const { nextLink } = this.props.chat.chatRoom.pageInfo
     if (nextLink !== null) {
-      console.log(nextLink.replace('&undefined=', ''))
       await this.props.scrollChatRoom(token, data.id, nextLink.replace('&undefined=', ''))
       await this.setState({
         pageInfo: this.props.chat.chatRoom.pageInfo
       })
     }
-    console.log(nextLink)
   }
 
   render () {

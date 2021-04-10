@@ -14,7 +14,6 @@ class ActivateEmail extends Component {
     const { email } = this.props.auth
 
     this.setState({ loading: true })
-    console.log(this.state.code)
     await this.props.confirmLogin(email, code)
     await this.setState({ loading: false })
     if (this.props.auth.erroMsg === null) {

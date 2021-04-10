@@ -6,7 +6,7 @@ import Goback from '../assets/images/icon/goback.png'
 import Pen from '../assets/images/icon/pen.png'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { connect } from 'react-redux'
-import { chatList, selectChat } from '../redux/actions/chat'
+import { chatList, selectChat, scrollChatList } from '../redux/actions/chat'
 import { parsingTime } from '../helpers/date'
 import { hashCode } from '../helpers/color'
 import { API_URL } from '@env'
@@ -27,7 +27,6 @@ class ChatList extends Component {
     this.willFocusSubscription = false
   }
 
-
   search = async (value) => {
     const { token } = this.props.auth
     await this.setState({ searchText: value })
@@ -45,6 +44,14 @@ class ChatList extends Component {
   showSearch () {
     this.setState({ search: !this.state.search })
     this.fetchData()
+  }
+
+  async nextPage () {
+    const { token } = this.props.auth
+    const { nextLink } = this.props.chat.chatList.pageInfo
+    if (nextLink !== null) {
+      await this.props.scrollChatList(token, nextLink.replace('&undefined=', ''))
+    }
   }
   render () {
     return (
@@ -91,7 +98,9 @@ class ChatList extends Component {
           <FlatList
             showsVerticalScrollIndicator={false}
             data={this.props.chat.chatList.results}
-            keyExtractor={(item) => String(item.id)}
+            keyExtractor={item => String(item.id)}
+            onEndReached={() => this.nextPage()}
+            onEndReachedThreshold={1}
             renderItem={({ item }) => (
               <>
                 <TouchableOpacity onPress={() => {
@@ -249,5 +258,5 @@ const mapStateToProps = (state) => ({
   auth: state.auth,
   chat: state.chat
 })
-const mapDispatchToProps = { chatList, selectChat }
+const mapDispatchToProps = { chatList, selectChat, scrollChatList }
 export default connect(mapStateToProps, mapDispatchToProps)(ChatList)
